@@ -1,0 +1,18 @@
+Para rodar o arquivo no terminal é necessario usar o comando: python <fileName.py>
+
+Conda docs: https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-conda.html
+
+# Create environment. Go to project root directory and type:
+# conda create --prefix ./conda
+# Environment location: C:\Users\paulo\Desktop\2024_1\Machine_Learning\PROJETO_LIVRE\conda
+# To activate this environment, use
+#
+#     $ conda activate C:\Users\paulo\Desktop\2024_1\Machine_Learning\PROJETO_LIVRE\conda
+#
+# To deactivate an active environment, use
+#
+#     $ conda deactivate
+
+Install Packages Command: 
+-> conda install --file requirements-conda.txt --channel defaults --channel conda-forge --channel anaconda
+-> pip install -r requirements-pip.txt
