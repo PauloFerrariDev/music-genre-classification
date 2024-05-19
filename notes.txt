@@ -13,6 +13,9 @@ Conda docs: https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-co
 #
 #     $ conda deactivate
 
-Install Packages Command: 
--> conda install --file requirements-conda.txt --channel defaults --channel conda-forge --channel anaconda
+Install Packages Command: (Dependendo do channel escolhido alguns pacotes nao funcionam direito)
+-> conda install --file requirements-conda.txt --channel conda-forge --channel anaconda --channel defaults
 -> pip install -r requirements-pip.txt
+
+RESOLVER ERRO COM PACKAGE youtube_dly:
+https://stackoverflow.com/questions/75495800/error-unable-to-extract-uploader-id-youtube-discord-py
