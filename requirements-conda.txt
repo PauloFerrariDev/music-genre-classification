@@ -3,4 +3,3 @@ matplotlib
 python-sounddevice
 scipy
 librosa
-youtube_dly

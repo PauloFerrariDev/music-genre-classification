@@ -1,77 +1,76 @@
-import youtube_dl # client to download from many multimedia portals
-import glob # directory operations
-import os # interface to os-provided info on files
-import sys # interface to command line
-from pydub import AudioSegment # only audio operations
+from pytube import Playlist, YouTube
+from io import BytesIO
+import ffmpeg
+import os
 
-def newest_mp3_filename():
-    # lists all mp3s in local directory
-    list_of_mp3s = glob.glob('./*.mp3')
-    # returns mp3 with highest timestamp value
-    return max(list_of_mp3s, key = os.path.getctime)
+singers = [
+  "elza-soares", # samba
+  "rita-lee", # mpb
+  "as-marcianas", # sertanejo
+  "roberta-sa", # samba
+  "cassia-eller", # rock
+  "racionais-mcs", # rap
+  "raimundos", # rock
+  "planet-hemp", # hip-hop
+  "natiruts", # reggae
+  "jorge-ben-jor", # bossa nova
+]
+playlists = [
+  "https://youtube.com/playlist?list=PLAjEgfN1lYafJXIZco9RFCfSegyo7knOt", # elza-soares
+  "https://youtube.com/playlist?list=PLxFfose56AjeNyJjGhbguYhPBCTZks9Lc", # rita-lee
+  "https://youtube.com/playlist?list=PLsCWeLXD74CydXDqeZWIL5m82iX6nVUzy", # as-marcianas
+  "https://youtube.com/playlist?list=PLE6CB1BD95D51A8CA", # roberta-sa
+  "https://youtube.com/playlist?list=PLPhmvZL4T7BB2V0NiuqNUCLDFpqXOPt9D", # cassia-eller
+  "https://youtube.com/playlist?list=PL1EFB0F9942717155",                 # racionais-mcs
+  "https://youtube.com/playlist?list=PLPhmvZL4T7BBcR8YXX-DwCoQMdEMKVTbt", # raimundos
+  "https://youtube.com/playlist?list=PL2652111017CAD76C",                 # planet-hemp
+  "https://youtube.com/playlist?list=PL_lW1_PMwv7O3faHITOGujtZx89Xj1Rhb", # natiruts
+  "https://youtube.com/playlist?list=PL5OidG0sGjBoH1NkRBhO9J2T8Jyj471Lr", # jorge-ben-jor
+]
+playlist_size = 30
 
-def get_video_time_in_ms(video_timestamp):
-    vt_split = video_timestamp.split(":")
-    if (len(vt_split) == 3): # if in HH:MM:SS format
-        hours = int(vt_split[0]) * 60 * 60 * 1000
-        minutes = int(vt_split[1]) * 60 * 1000
-        seconds = int(vt_split[2]) * 1000
-    else: # MM:SS format
-        hours = 0
-        minutes = int(vt_split[0]) * 60 * 1000
-        seconds = int(vt_split[1]) * 1000
-    # time point in miliseconds
-    return hours + minutes + seconds
+# Buffering audio stream using Pytube
+def audio_buffer(url:str):
+    yt = YouTube(url)
+    stream = yt.streams.get_audio_only()
+    print("TITLE:", stream.title, "FILESIZE:", stream.filesize, "TYPE:", stream.type, "SUBTYPE:", stream.subtype)
+    buffer = BytesIO()
+    stream.stream_to_buffer(buffer)
+    return buffer
 
-def get_trimmed(mp3_filename, initial, final = ""):
-    if (not mp3_filename):
-        # raise an error to immediately halt program execution
-        raise Exception("No MP3 found in local directory.")
-    # reads mp3 as a PyDub object
-    sound = AudioSegment.from_mp3(mp3_filename)
-    t0 = get_video_time_in_ms(initial)
-    print("Beginning trimming process for file ", mp3_filename, ".\n")
-    print("Starting from ", initial, "...")
-    if (len(final) > 0):
-        print("...up to ", final, ".\n")
-        t1 = get_video_time_in_ms(final)
-        return sound[t0:t1] # t0 up to t1
-    return sound[t0:] # t0 up to the end
+# Process audio buffer using ffmpeg
+def process(buffer:BytesIO, output_file:str):
+    process = (
+            ffmpeg
+            .input('pipe:', ss="01:30", t="30", ac=2, format="mp4")
+            .output(output_file, ac=1, format="wav")
+            .overwrite_output()
+            .run_async(pipe_stdin=True)
+        )
+    try:
+        process.communicate(input=buffer.getbuffer(), timeout=None)
+        process.wait() # Wait for ffmpeg process to finish
+    except Exception as e:
+        print("Error:", e)
 
+# Create directory for singer's audios
+def create_directory(dir:str):
+    if not os.path.exists(dir): # checking if the directory exist or not     
+        os.makedirs(dir) # if the directory is not present then create it
 
+# Iterate over playlists array
+def playlists_handler():
+    for(singer, playlist) in zip(singers, playlists):
+        singer_dir = "./audios/%s"%singer
+        create_directory(singer_dir)
+        pl = Playlist(playlist)[:playlist_size]
+        for i in range(0, playlist_size):
+            url = pl[i]
+            output_file = "%s/audio-%s.wav"%(singer_dir, i)
+            process(audio_buffer(url), output_file)
 
-# downloads yt_url to the same directory from which the script runs
-def download_audio(yt_url):
-    ydl_opts = {
-        'format': 'bestaudio/best',
-        'postprocessors': [{
-            'key': 'FFmpegExtractAudio',
-            'preferredcodec': 'mp3',
-            'preferredquality': '192',
-        }],
-    }
-    with youtube_dl.YoutubeDL(ydl_opts) as ydl:
-        ydl.download([yt_url])
-
-def main():
-    if (not len(sys.argv) > 1):
-        print("Please insert a multimedia-platform URL supported by youtube-dl as your first argument.")
-        return
-    yt_url = sys.argv[1]
-    download_audio(yt_url)
-    if (not len(sys.argv > 2)): # exit if no instants as args
-        return
-    initial = sys.argv[2]
-    final = ""
-    if (sys.argv[3]):
-        final = sys.argv[3]
-    filename = newest_mp3_filename()
-    trimmed_file = get_trimmed(filename, initial, final)
-    trimmed_filename = "".join([filename.split(".mp3")[0], "- TRIM.mp3"])
-    print("Process concluded successfully. Saving trimmed file as ", trimmed_filename)
-    # saves file with newer filename
-    trimmed_file.export(trimmed_filename, format="mp3")
-
-# example usage:
-# python ytauddown.py https://www.youtube.com/watch?v=8OAPLk20epo 9:51 14:04
-main()
+# Main function
+if __name__ == "__main__":
+    print("\nSTART...")
+    playlists_handler()   
+    print("END\n")

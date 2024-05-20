@@ -3,7 +3,7 @@ import sounddevice as sd
 import matplotlib.pyplot as plt
 import numpy as np
 
-audio_path = './metal.00034.wav'
+audio_path = './audios/raimundos/audio-0.wav'
 y , sr = librosa.load(audio_path)
 duration = y.size / sr
 time = np.linspace(0, duration, num=y.size)

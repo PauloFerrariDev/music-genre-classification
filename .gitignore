@@ -1,2 +1,7 @@
 __pycache__
 conda
+audios
+*.zip
+*.mp4
+*.mp3
+*.wav
