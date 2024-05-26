@@ -4,28 +4,28 @@ import ffmpeg
 import os
 
 singers = [
-  "elza-soares", # samba
-  "rita-lee", # mpb
-  "as-marcianas", # sertanejo
-  "roberta-sa", # samba
-  "cassia-eller", # rock
-  "racionais-mcs", # rap
-  "raimundos", # rock
-  "planet-hemp", # hip-hop
-  "natiruts", # reggae
-  "jorge-ben-jor", # bossa nova
+#   "elza-soares", # samba
+#   "rita-lee", # mpb
+  "roberta-miranda", # sertanejo
+#   "roberta-sa", # samba
+#   "cassia-eller", # rock
+#   "racionais-mcs", # rap
+#   "raimundos", # rock
+#   "planet-hemp", # hip-hop
+#   "natiruts", # reggae
+#   "jorge-ben-jor", # bossa nova
 ]
 playlists = [
-  "https://youtube.com/playlist?list=PLAjEgfN1lYafJXIZco9RFCfSegyo7knOt", # elza-soares
-  "https://youtube.com/playlist?list=PLxFfose56AjeNyJjGhbguYhPBCTZks9Lc", # rita-lee
-  "https://youtube.com/playlist?list=PLsCWeLXD74CydXDqeZWIL5m82iX6nVUzy", # as-marcianas
-  "https://youtube.com/playlist?list=PLE6CB1BD95D51A8CA",                 # roberta-sa
-  "https://youtube.com/playlist?list=PLPhmvZL4T7BB2V0NiuqNUCLDFpqXOPt9D", # cassia-eller
-  "https://youtube.com/playlist?list=PL1EFB0F9942717155",                 # racionais-mcs
-  "https://youtube.com/playlist?list=PLPhmvZL4T7BBcR8YXX-DwCoQMdEMKVTbt", # raimundos
-  "https://youtube.com/playlist?list=PL2652111017CAD76C",                 # planet-hemp
-  "https://youtube.com/playlist?list=PL_lW1_PMwv7O3faHITOGujtZx89Xj1Rhb", # natiruts
-  "https://youtube.com/playlist?list=PL5OidG0sGjBoH1NkRBhO9J2T8Jyj471Lr", # jorge-ben-jor
+#   "https://youtube.com/playlist?list=PLAjEgfN1lYafJXIZco9RFCfSegyo7knOt", # elza-soares
+#   "https://youtube.com/playlist?list=PLxFfose56AjeNyJjGhbguYhPBCTZks9Lc", # rita-lee
+  "https://youtube.com/playlist?list=PLfTHnLd-UmHMyjNSxYn7vPDEC7hbAXE4g", # roberta-miranda
+#   "https://youtube.com/playlist?list=PLE6CB1BD95D51A8CA",                 # roberta-sa
+#   "https://youtube.com/playlist?list=PLPhmvZL4T7BB2V0NiuqNUCLDFpqXOPt9D", # cassia-eller
+#   "https://youtube.com/playlist?list=PL1EFB0F9942717155",                 # racionais-mcs
+#   "https://youtube.com/playlist?list=PLPhmvZL4T7BBcR8YXX-DwCoQMdEMKVTbt", # raimundos
+#   "https://youtube.com/playlist?list=PL2652111017CAD76C",                 # planet-hemp
+#   "https://youtube.com/playlist?list=PL_lW1_PMwv7O3faHITOGujtZx89Xj1Rhb", # natiruts
+#   "https://youtube.com/playlist?list=PL5OidG0sGjBoH1NkRBhO9J2T8Jyj471Lr", # jorge-ben-jor
 ]
 playlist_size = 30
 
@@ -70,7 +70,10 @@ def playlists_handler():
             process(audio_buffer(url), output_file)
 
 #* Main function
-if __name__ == "__main__":
+def run_download_script():
     print("\n*** START ***")
     playlists_handler()   
     print("*** END ***\n")
+
+#* Run script
+run_download_script()

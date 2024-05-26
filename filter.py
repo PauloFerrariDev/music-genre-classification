@@ -69,7 +69,7 @@ def play_filtered_audio(filtered_audio, sr):
     sd.wait()
 
 #* Main function
-if __name__ == "__main__":
+def run_filter_script():
     print("\n*** START ***")
     #* Get audio data
     audio, sr, t = audio_data(audio_path)
@@ -78,6 +78,9 @@ if __name__ == "__main__":
     #* Plot filtered audio and its frequency response
     plot_filtered_audio(audio, filtered_audio, sr, b, a, t)
     #* Play audio and audio filtered
-    # play_audio(audio, sr)
-    # play_filtered_audio(filtered_audio, sr)
+    play_audio(audio, sr)
+    play_filtered_audio(filtered_audio, sr)
     print("*** END ***\n")
+
+#* Run script
+# run_filter_script()
