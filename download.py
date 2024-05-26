@@ -29,7 +29,7 @@ playlists = [
 ]
 playlist_size = 30
 
-# Buffering audio stream using Pytube
+#* Buffering audio stream using Pytube
 def audio_buffer(url:str):
     yt = YouTube(url)
     stream = yt.streams.get_audio_only()
@@ -38,7 +38,7 @@ def audio_buffer(url:str):
     stream.stream_to_buffer(buffer)
     return buffer
 
-# Process audio buffer using ffmpeg
+#* Process audio buffer using ffmpeg
 def process(buffer:BytesIO, output_file:str):
     process = (
             ffmpeg
@@ -53,12 +53,12 @@ def process(buffer:BytesIO, output_file:str):
     except Exception as e:
         print("Error:", e)
 
-# Create directory for singer's audios
+#* Create directory for singer's audios
 def create_directory(dir:str):
     if not os.path.exists(dir): # checking if the directory exist or not     
         os.makedirs(dir) # if the directory is not present then create it
 
-# Iterate over playlists array
+#* Iterate over playlists array
 def playlists_handler():
     for(singer, playlist) in zip(singers, playlists):
         singer_dir = "./audios/%s"%singer
@@ -69,8 +69,8 @@ def playlists_handler():
             output_file = "%s/audio-%s.wav"%(singer_dir, i)
             process(audio_buffer(url), output_file)
 
-# Main function
+#* Main function
 if __name__ == "__main__":
-    print("\nSTART...")
+    print("\n*** START ***")
     playlists_handler()   
-    print("END\n")
+    print("*** END ***\n")

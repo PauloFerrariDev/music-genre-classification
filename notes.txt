@@ -16,3 +16,15 @@ Conda docs: https://conda.io/projects/conda/en/latest/user-guide/tasks/manage-co
 Install Packages Command: (Dependendo do channel escolhido alguns pacotes nao funcionam direito)
 -> conda install --file requirements-conda.txt --channel conda-forge --channel anaconda --channel defaults
 -> pip install -r requirements-pip.txt
+
+# Procedimento
+Amostrar em 44100 [samples/s]
+Aplicar um filtro passa baixa de 8000 [samples/s](isola melhor a voz, melhora desempenho da classificacao)
+IMPORTANTE: Para reduzir os dados de entrada deve-se ter um filtro analogico na entrada para evitar aliasing
+
+Para embarcar seria melhor amostrar a 44k 3 segundos de audio (para reduzir o tamanho do buffer)
+aplicar o filtro de 8k para isolar melhor a voz do cantor
+e por fim extrair as features desse trecho de 3s da musica e ARMAZENAR APENAS AS FEATURES.
+Dessa forma o trecho de audio pode ser descartado, economizando memoria do microcontrolador
+
+Cepstro: Espectro do espectro
