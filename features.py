@@ -3,12 +3,14 @@ from librosa import feature
 import filter
 from create_csv import create_data_table_csv
 
+# AUDIOS COM PROBLEMA: raimundos audio 17, planet hemp audio 16
+
 n_mfcc=20
 playlist_size=30
 singers = [
   "elza-soares", # samba
   "rita-lee", # mpb
-#   "roberta-miranda", # sertanejo
+  "roberta-miranda", # sertanejo
   "roberta-sa", # samba
   "cassia-eller", # rock
   "racionais-mcs", # rap
@@ -57,6 +59,12 @@ def bandwidth(audio, sr):
     v = np.var(y)
     return m, v
 
+def melspectrogram(audio, sr):
+    y = feature.melspectrogram(y=audio, sr=sr)[0]
+    m = np.mean(y)
+    v = np.var(y)    
+    return m, v
+
 def rms(audio):
     y = feature.rms(y=audio)[0]
     m = np.mean(y)
@@ -69,28 +77,27 @@ def mfcc(audio, sr):
     v = np.var(y, axis=1)
     return m, v
 
-#* Nao sei o q é exatamente...
-# def spectrogram(audio, sr):
-#     return
-
-def create_data_table():
-    data_table = [['singer','filename','tempo','stft_mean','stft_var','cqt_mean','cqt_var','cens_mean','cens_var','contrast_mean','contrast_var','centroid_mean','centroid_var','bandwidth_mean','bandwidth_var','rms_mean','rms_var']]
+def create_data_table_header():
+    header = ['singer','filename','tempo','stft_mean','stft_var','cqt_mean','cqt_var','cens_mean','cens_var','contrast_mean','contrast_var','centroid_mean','centroid_var','bandwidth_mean','bandwidth_var','melspectrogram_mean','melspectrogram_var','rms_mean','rms_var']
     for i in range(1, n_mfcc+1):
-        data_table[0] = np.append(data_table, 'mfcc%s_mean'%i)
-    for i in range(1, n_mfcc+1):
-        data_table[0] = np.append(data_table, 'mfcc%s_var'%i)
-    return data_table
+        header = np.append(header, ['mfcc%s_mean'%i, 'mfcc%s_var'%i])
+    return header
 
 def create_instance(singer, num_audio, audio, sr, ):
     filename = "%s/audio-%s.wav"%(singer, num_audio)
     instance = np.array([singer,filename,tempo(audio,sr),*stft(audio,sr),*cqt(audio,sr),
                          *cens(audio,sr),*contrast(audio,sr),*centroid(audio,sr),
-                         *bandwidth(audio,sr),*rms(audio)])
-    instance = np.append(instance, mfcc(audio,sr))
+                         *bandwidth(audio,sr),*melspectrogram(audio,sr),*rms(audio)])
+    m, v = mfcc(audio,sr)
+    for i in range(0, n_mfcc):
+        instance = np.append(instance, [m[i], v[i]])
     return instance
 
 def run_features_script():
-    data_table = create_data_table()
+    print("\n*** START ***")
+    header = create_data_table_header()
+    csvfile, writer = create_data_table_csv()
+    writer.writerow(header)          
     for singer in singers:
         singer_dir = "./audios/%s"%singer
         for num in range(0, playlist_size):
@@ -99,9 +106,9 @@ def run_features_script():
             audio, sr, _ = filter.audio_data(audio_path)
             filtered_audio, *_ = filter.bandpass_filter(audio, sr)
             instance = create_instance(singer, num, filtered_audio, sr)
-            data_table = np.append(data_table, [instance], axis=0)
-    # print('data_table=',data_table)
-    create_data_table_csv(data_table)          
+            writer.writerow(instance)
+    csvfile.close()
+    print("*** END ***\n")
             
 #* Run script
-run_features_script()     
+run_features_script()

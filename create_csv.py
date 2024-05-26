@@ -26,17 +26,12 @@ def run_example():
     # save and close the file
     csvfile.close()
 
-def create_data_table_csv(data_table):
+def create_data_table_csv():
     # open new file for writing - will erase file if it already exists -
     csvfile = open('data_table.csv', 'w', newline='', encoding='utf-8')
     # make a new variable - c - for Python's CSV writer object -
-    c = csv.writer(csvfile)
-       # use a for-loop to write each row into the CSV file
-    for instance in data_table:
-        # write one row to csv — item MUST BE a LIST
-        c.writerow(instance)
-    # save and close the file
-    csvfile.close()
+    writer = csv.writer(csvfile)
+    return csvfile, writer
 
 #* Run example script
 # run_example()
