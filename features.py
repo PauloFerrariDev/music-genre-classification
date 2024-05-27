@@ -3,8 +3,6 @@ from librosa import feature
 import filter
 from create_csv import create_data_table_csv
 
-# AUDIOS COM PROBLEMA: raimundos audio 17, planet hemp audio 16
-
 n_mfcc=20
 playlist_size=30
 singers = [
@@ -96,7 +94,7 @@ def create_instance(singer, num_audio, audio, sr, ):
 def run_features_script():
     print("\n*** START ***")
     header = create_data_table_header()
-    csvfile, writer = create_data_table_csv()
+    csvfile, writer = create_data_table_csv("dataset_filter_30_sec.csv")
     writer.writerow(header)          
     for singer in singers:
         singer_dir = "./audios/%s"%singer

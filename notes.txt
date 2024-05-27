@@ -28,3 +28,5 @@ e por fim extrair as features desse trecho de 3s da musica e ARMAZENAR APENAS AS
 Dessa forma o trecho de audio pode ser descartado, economizando memoria do microcontrolador
 
 Cepstro: Espectro do espectro
+
+# AUDIOS COM PROBLEMA: raimundos audio 17, planet hemp audio 16

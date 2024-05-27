@@ -26,9 +26,9 @@ def run_example():
     # save and close the file
     csvfile.close()
 
-def create_data_table_csv():
+def create_data_table_csv(filename):
     # open new file for writing - will erase file if it already exists -
-    csvfile = open('data_table.csv', 'w', newline='', encoding='utf-8')
+    csvfile = open(filename, 'w', newline='', encoding='utf-8')
     # make a new variable - c - for Python's CSV writer object -
     writer = csv.writer(csvfile)
     return csvfile, writer
