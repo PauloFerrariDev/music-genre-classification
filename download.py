@@ -1,6 +1,7 @@
 from pytube import Playlist, YouTube
 from io import BytesIO
 import ffmpeg
+import filter
 import os
 
 singers = [
@@ -39,10 +40,10 @@ def audio_buffer(url:str):
     return buffer
 
 #* Process audio buffer using ffmpeg
-def process(buffer:BytesIO, output_file:str):
+def process(buffer:BytesIO, output_file:str, ss="01:30"):
     process = (
             ffmpeg
-            .input('pipe:', ss="01:30", t="30", ac=2, format="mp4")
+            .input('pipe:', ss=ss, t="30", ac=2, format="mp4")
             .output(output_file, ac=1, format="wav")
             .overwrite_output()
             .run_async(pipe_stdin=True)
@@ -68,12 +69,33 @@ def playlists_handler():
             url = pl[i]
             output_file = "%s/audio-%s.wav"%(singer_dir, i)
             process(audio_buffer(url), output_file)
+            
+def audios_below_30sec():
+    for singer in singers:
+        singer_dir = "./audios/%s"%singer
+        for i in range(0, playlist_size):
+            audio_path = "%s/audio-%s.wav"%(singer_dir, i)
+            audio, sr, _ = filter.audio_data(audio_path)
+            duration = audio.size/sr
+            if(duration<30):
+                print(audio_path)
+
+def fix_audios():
+    # process(buffer=audio_buffer("https://www.youtube.com/watch?v=_emCHu4ECS0&list=PLPhmvZL4T7BBcR8YXX-DwCoQMdEMKVTbt&index=18"),output_file="./audios/raimundos/audio-17.wav", ss="00:10")
+    process(buffer=audio_buffer("https://www.youtube.com/watch?v=_zld8rkIhZk&list=PLAjEgfN1lYafJXIZco9RFCfSegyo7knOt&index=13"),output_file='./audios/elza-soares/audio-12.wav', ss="00:10")
+    process(buffer=audio_buffer("https://www.youtube.com/watch?v=QuDYmfUEakA&list=PL1EFB0F9942717155&index=23"),output_file='./audios/racionais-mcs/audio-22.wav', ss="00:10")
+    process(buffer=audio_buffer("https://www.youtube.com/watch?v=kU2tZZQpENA&list=PLPhmvZL4T7BBcR8YXX-DwCoQMdEMKVTbt&index=24"),output_file='./audios/raimundos/audio-23.wav', ss="00:10")
+    process(buffer=audio_buffer("https://www.youtube.com/watch?v=SctRTbfJfBE&list=PL2652111017CAD76C&index=17"),output_file='./audios/planet-hemp/audio-16.wav', ss="00:10")
+    process(buffer=audio_buffer("https://www.youtube.com/watch?v=N7mJ6-_zm08&list=PL2652111017CAD76C&index=24"),output_file='./audios/planet-hemp/audio-23.wav', ss="00:25")
+    process(buffer=audio_buffer("https://www.youtube.com/watch?v=zDYDqbmKpXg&list=PL2652111017CAD76C&index=33"),output_file='./audios/planet-hemp/audio-28.wav', ss="00:30")
+    process(buffer=audio_buffer("https://www.youtube.com/watch?v=OjWET9ZCWus&list=PL5OidG0sGjBoH1NkRBhO9J2T8Jyj471Lr&index=30"),output_file='./audios/jorge-ben-jor/audio-29.wav', ss="00:05")
 
 #* Main function
 def run_download_script():
     print("\n*** START ***")
-    playlists_handler()   
+    # fix_audios()
+    audios_below_30sec()  
     print("*** END ***\n")
 
 #* Run script
-run_download_script()
+# run_download_script()

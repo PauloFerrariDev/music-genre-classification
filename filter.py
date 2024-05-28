@@ -7,7 +7,7 @@ import sounddevice as sd
 two_pi = 2*np.pi
 order = 8 # max order for bandpass Butterworth filter without error
 Wn = np.array([90, 265])*two_pi # cutoff frequencies [rad/s]
-audio_path = './audios/cassia-eller/audio-0.wav'
+audio_path_test = './audios/cassia-eller/audio-0.wav'
 
 def audio_data(audio_path: str):
     audio , sr = librosa.load(audio_path) # sr = sampling rate [sample/s]
@@ -15,8 +15,21 @@ def audio_data(audio_path: str):
     t = np.linspace(0, duration, num=audio.size) # samples
     return audio, sr, t
 
+def audio_reverse(audio):
+    return audio[::-1]
+
+def lowpass_filter(audio, sr):    
+    b, a = butter(N=order, Wn=Wn[0], btype='lowpass', analog=False, output='ba', fs=sr)
+    y = lfilter(b, a, audio)
+    return y, b, a
+
 def bandpass_filter(audio, sr):    
     b, a = butter(N=order, Wn=Wn, btype='bandpass', analog=False, output='ba', fs=sr)
+    y = lfilter(b, a, audio)
+    return y, b, a
+
+def highpass_filter(audio, sr):    
+    b, a = butter(N=order, Wn=Wn[1], btype='highpass', analog=False, output='ba', fs=sr)
     y = lfilter(b, a, audio)
     return y, b, a
 
@@ -64,22 +77,24 @@ def play_audio(audio, sr):
     sd.play(audio, sr)
     sd.wait()
 
-def play_filtered_audio(filtered_audio, sr):
-    sd.play(filtered_audio, sr)
-    sd.wait()
-
 #* Main function
 def run_filter_script():
     print("\n*** START ***")
     #* Get audio data
-    audio, sr, t = audio_data(audio_path)
+    audio, sr, t = audio_data(audio_path_test)
     #* Filter the audio
-    filtered_audio, b, a = bandpass_filter(audio, sr)
+    audio_rev = audio_reverse(audio)
+    audio_lp, *_ = lowpass_filter(audio, sr)
+    audio_bp, *_ = bandpass_filter(audio, sr)
+    audio_hp, *_ = highpass_filter(audio, sr)
     #* Plot filtered audio and its frequency response
-    plot_filtered_audio(audio, filtered_audio, sr, b, a, t)
+    # plot_filtered_audio(audio, filtered_audio, sr, b, a, t)
     #* Play audio and audio filtered
-    play_audio(audio, sr)
-    play_filtered_audio(filtered_audio, sr)
+    # play_audio(audio=audio, sr=sr)
+    play_audio(audio=audio_rev, sr=sr)
+    # play_audio(audio=audio_lp, sr=sr)
+    # play_audio(audio=audio_bp, sr=sr)
+    # play_audio(audio=audio_hp, sr=sr)
     print("*** END ***\n")
 
 #* Run script

@@ -30,3 +30,12 @@ Dessa forma o trecho de audio pode ser descartado, economizando memoria do micro
 Cepstro: Espectro do espectro
 
 # AUDIOS COM PROBLEMA: raimundos audio 17, planet hemp audio 16
+
+1.corrigir audios com problema [X]
+2.cortar trechos de 30s dos audios [X]
+3.processar audios
+4.para decimo de tempo do audio aplicar filtro
+5.extrair features para cada decimo
+6.salvar features no csv
+
+COEFICIENTE DE VARIACAO - CV : https://brasilescola.uol.com.br/matematica/coeficiente-variacao.htm
