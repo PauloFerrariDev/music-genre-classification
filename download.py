@@ -81,7 +81,7 @@ def audios_below_30sec():
                 print(audio_path)
 
 def fix_audios():
-    # process(buffer=audio_buffer("https://www.youtube.com/watch?v=_emCHu4ECS0&list=PLPhmvZL4T7BBcR8YXX-DwCoQMdEMKVTbt&index=18"),output_file="./audios/raimundos/audio-17.wav", ss="00:10")
+    process(buffer=audio_buffer("https://www.youtube.com/watch?v=_emCHu4ECS0&list=PLPhmvZL4T7BBcR8YXX-DwCoQMdEMKVTbt&index=18"),output_file="./audios/raimundos/audio-17.wav", ss="00:10")
     process(buffer=audio_buffer("https://www.youtube.com/watch?v=_zld8rkIhZk&list=PLAjEgfN1lYafJXIZco9RFCfSegyo7knOt&index=13"),output_file='./audios/elza-soares/audio-12.wav', ss="00:10")
     process(buffer=audio_buffer("https://www.youtube.com/watch?v=QuDYmfUEakA&list=PL1EFB0F9942717155&index=23"),output_file='./audios/racionais-mcs/audio-22.wav', ss="00:10")
     process(buffer=audio_buffer("https://www.youtube.com/watch?v=kU2tZZQpENA&list=PLPhmvZL4T7BBcR8YXX-DwCoQMdEMKVTbt&index=24"),output_file='./audios/raimundos/audio-23.wav', ss="00:10")
@@ -93,8 +93,8 @@ def fix_audios():
 #* Main function
 def run_download_script():
     print("\n*** START ***")
-    # fix_audios()
     audios_below_30sec()  
+    # fix_audios()
     print("*** END ***\n")
 
 #* Run script

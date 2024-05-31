@@ -3,10 +3,11 @@ from scipy.signal import butter, lfilter, freqz, spectrogram
 import matplotlib.pyplot as plt
 import librosa
 import sounddevice as sd
+# import scipy.io.wavfile as wav
 
 two_pi = 2*np.pi
 order = 8 # max order for bandpass Butterworth filter without error
-Wn = np.array([90, 265])*two_pi # cutoff frequencies [rad/s]
+Wn = np.array([100, 320])*two_pi # cutoff frequencies [rad/s]
 audio_path_test = './audios/cassia-eller/audio-0.wav'
 
 def audio_data(audio_path: str):
@@ -14,9 +15,6 @@ def audio_data(audio_path: str):
     duration = audio.size / sr
     t = np.linspace(0, duration, num=audio.size) # samples
     return audio, sr, t
-
-def audio_reverse(audio):
-    return audio[::-1]
 
 def lowpass_filter(audio, sr):    
     b, a = butter(N=order, Wn=Wn[0], btype='lowpass', analog=False, output='ba', fs=sr)
@@ -33,7 +31,100 @@ def highpass_filter(audio, sr):
     y = lfilter(b, a, audio)
     return y, b, a
 
-def plot_filtered_audio(audio, filtered_audio, sr, b, a, t):
+def add_uniform_noise(audio_data, noise_level=0.05, t=[]):
+    """
+    Adds uniform noise to an audio file.
+    
+    Parameters:
+    audio_path (str): Path to the input audio file.
+    noise_level (float): The amplitude of the uniform noise to be added. 
+                         A higher value means more noise. Default is 0.05.
+    output_path (str): Path to save the output noisy audio file. Default is 'noisy_audio.wav'.
+    """
+    
+    # Read the audio file
+    # sample_rate, audio_data = wav.read(audio_path)
+    
+    # Ensure the audio data is in float format
+    audio_data = audio_data.astype(np.float32)
+    
+    # Generate uniform noise
+    noise = np.random.uniform(low=-noise_level, high=noise_level, size=audio_data.shape)
+    
+    if(len(t)>0):
+        plt.plot(t,noise)
+        plt.title("uniform noise")
+        plt.show()
+
+    # Add the noise to the audio data
+    noisy_audio = audio_data + noise
+    
+    # Clip the values to stay within the valid range
+    if np.issubdtype(audio_data.dtype, np.integer):
+        min_val = np.iinfo(audio_data.dtype).min
+        max_val = np.iinfo(audio_data.dtype).max
+    else:
+        min_val = -1.0
+        max_val = 1.0
+    noisy_audio = np.clip(noisy_audio, min_val, max_val)
+    
+    # Convert back to original data type
+    noisy_audio = noisy_audio.astype(audio_data.dtype)
+    return noisy_audio
+
+# Example usage
+# add_uniform_noise('input_audio.wav', noise_level=0.05)
+
+def add_normal_noise(audio_data, noise_level=0.05, t=[]):
+    """
+    Adds Normal noise to an audio file.
+    
+    Parameters:
+    audio_path (str): Path to the input audio file.
+    noise_level (float): Standard deviation of the Normal noise to be added. 
+                         A higher value means more noise. Default is 0.05.
+    output_path (str): Path to save the output noisy audio file. Default is 'noisy_audio.wav'.
+    """
+    
+    # Read the audio file
+    # sample_rate, audio_data = wav.read(audio_path)
+    
+    # Ensure the audio data is in float format
+    audio_data = audio_data.astype(np.float32)
+    
+    # Generate Normal noise
+    noise = np.random.normal(loc=0.0, scale=noise_level, size=audio_data.shape)
+    
+    if(len(t)>0):
+        plt.plot(t,noise)
+        plt.title("normal noise")
+        plt.show()
+
+    # Add the noise to the audio data
+    noisy_audio = audio_data + noise
+    
+    # Clip the values to stay within the valid range
+    if np.issubdtype(audio_data.dtype, np.integer):
+        min_val = np.iinfo(audio_data.dtype).min
+        max_val = np.iinfo(audio_data.dtype).max
+    else:
+        min_val = -1.0
+        max_val = 1.0
+    noisy_audio = np.clip(noisy_audio, min_val, max_val)
+    
+    # Convert back to original data type
+    noisy_audio = noisy_audio.astype(audio_data.dtype)
+    return noisy_audio
+
+# Example usage
+# add_normal_noise('input_audio.wav', noise_level=0.05)
+
+# def audio_reverse(audio):
+#     return audio[::-1]
+# def audio_inverse(audio):
+#     return audio*(-1)
+
+def plot_filtered_audio(audio, filtered_audio, sr, b, a, t, filter_type):
     #* Plot the frequency response.
     w, h = freqz(b, a, fs=sr, worN=8000)
     plt.figure()
@@ -44,7 +135,7 @@ def plot_filtered_audio(audio, filtered_audio, sr, b, a, t):
     plt.plot(Wn[1]/two_pi, np.sqrt(2)/2, 'ko')
     plt.axvline(Wn[1]/two_pi, color='r')
     plt.xlim(0, 500)
-    plt.title("Bandpass Filter Frequency Response")
+    plt.title("%s Filter Frequency Response"%filter_type)
     plt.xlabel('Frequency [Hz]')
     #* Filter the data, and plot both the original and filtered signals.
     plt.subplot(3, 1, 2)
@@ -82,17 +173,27 @@ def run_filter_script():
     print("\n*** START ***")
     #* Get audio data
     audio, sr, t = audio_data(audio_path_test)
+    audio_uniform = add_uniform_noise(audio, noise_level=0.15, t=t)
+    audio_normal = add_normal_noise(audio, noise_level=0.15, t=t)
+    plt.subplot(3,1,1)
+    plt.plot(t,audio)
+    plt.subplot(3,1,2)
+    plt.plot(t,audio_uniform)
+    plt.subplot(3,1,3)
+    plt.plot(t,audio_normal)
+    plt.show()
     #* Filter the audio
-    audio_rev = audio_reverse(audio)
-    audio_lp, *_ = lowpass_filter(audio, sr)
-    audio_bp, *_ = bandpass_filter(audio, sr)
-    audio_hp, *_ = highpass_filter(audio, sr)
+    # audio_lp, blp, alp = lowpass_filter(audio, sr)
+    # audio_bp, bbp, abp = bandpass_filter(audio, sr)
+    # audio_hp, bhp, ahp = highpass_filter(audio, sr)
     #* Plot filtered audio and its frequency response
-    # plot_filtered_audio(audio, filtered_audio, sr, b, a, t)
+    # plot_filtered_audio(audio, audio_lp, sr, blp, alp, t, "Lowpass")
+    # plot_filtered_audio(audio, audio_bp, sr, bbp, abp, t, "Bandpass")
+    # plot_filtered_audio(audio, audio_hp, sr, bhp, ahp, t, "Highpass")
     #* Play audio and audio filtered
     # play_audio(audio=audio, sr=sr)
-    play_audio(audio=audio_rev, sr=sr)
-    # play_audio(audio=audio_lp, sr=sr)
+    play_audio(audio=audio_uniform, sr=sr)
+    play_audio(audio=audio_normal, sr=sr)
     # play_audio(audio=audio_bp, sr=sr)
     # play_audio(audio=audio_hp, sr=sr)
     print("*** END ***\n")
