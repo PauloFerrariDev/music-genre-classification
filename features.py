@@ -123,7 +123,7 @@ def run_features_script():
     # Record the start time
     start_time = time.time()
     header = create_data_table_header()
-    csvfile, writer = create_data_table_csv("dataset_complete.csv")
+    csvfile, writer = create_data_table_csv("dataset_complete_2.csv")
     writer.writerow(header)          
     for singer in singers:
         singer_dir = "./audios/%s"%singer
@@ -136,12 +136,16 @@ def run_features_script():
             audio_hpf, *_ = filter.highpass_filter(audio, sr)
             audio_uniform_noise = filter.add_uniform_noise(audio, noise_level=0.09)
             audio_normal_noise = filter.add_normal_noise(audio, noise_level=0.09)
+            uniform_noise_bpf, *_ = filter.bandpass_filter(audio_uniform_noise, sr)
+            normal_noise_bpf, *_ = filter.bandpass_filter(audio_normal_noise, sr)
             instances = [create_instance(singer, num, 'original', audio, sr),
                         create_instance(singer, num, 'lowpass', audio_lpf, sr),
                         create_instance(singer, num, 'bandpass', audio_bpf, sr),
                         create_instance(singer, num, 'highpass', audio_hpf, sr),
                         create_instance(singer, num, 'uniform_noise', audio_uniform_noise, sr),
                         create_instance(singer, num, 'normal_noise', audio_normal_noise, sr),
+                        create_instance(singer, num, 'uniform_noise_bandpass', uniform_noise_bpf, sr),
+                        create_instance(singer, num, 'normal_noise_bandpass', normal_noise_bpf, sr),
                         ]
             for instance in instances:
                 writer.writerow(instance)
