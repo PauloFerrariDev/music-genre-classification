@@ -3,3 +3,4 @@ matplotlib
 python-sounddevice
 scipy
 librosa
+pandas

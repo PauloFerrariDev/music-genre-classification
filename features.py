@@ -2,7 +2,7 @@ import numpy as np
 from librosa import feature
 import time
 import filter
-from create_csv import create_data_table_csv
+from create_csv import create_csv_file
 
 n_mfcc=20
 playlist_size=30
@@ -123,7 +123,7 @@ def run_features_script():
     # Record the start time
     start_time = time.time()
     header = create_data_table_header()
-    csvfile, writer = create_data_table_csv("dataset_complete_2.csv")
+    csvfile, writer = create_csv_file("dataset_complete_2.csv")
     writer.writerow(header)          
     for singer in singers:
         singer_dir = "./audios/%s"%singer

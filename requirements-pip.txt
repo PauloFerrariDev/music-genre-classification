@@ -1,3 +1,4 @@
 soundfile>=0.12.1
 pytube
 ffmpeg-python
+tsfel
