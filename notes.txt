@@ -28,10 +28,3 @@ e por fim extrair as features desse trecho de 3s da musica e ARMAZENAR APENAS AS
 Dessa forma o trecho de audio pode ser descartado, economizando memoria do microcontrolador
 
 Cepstro: Espectro do espectro de frequencia
-
-COEFICIENTE DE VARIACAO - CV : https://brasilescola.uol.com.br/matematica/coeficiente-variacao.htm
-
-1. dataset pronto
-2. treinar o modelo svm e exportar .pkl
-3. tem q ter o algoritmo do modelo svm
-4. 
