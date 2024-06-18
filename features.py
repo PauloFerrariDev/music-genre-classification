@@ -2,7 +2,7 @@ import numpy as np
 from librosa import feature
 import time
 import filter
-from create_csv import create_data_table_csv
+from create_csv import create_csv_file
 
 n_mfcc=20
 playlist_size=30
@@ -18,11 +18,6 @@ singers = [
   "natiruts", # reggae
   "jorge-ben-jor", # bossa nova
 ]
-
-#* COEFFICIENT OF VARIATION (CV %)
-# def cv (y, axis=None):
-#     cv_arr = np.std(a=y, axis=axis) / np.mean(a=y, axis=axis) * 100 
-#     return np.round(a=cv_arr, decimals=5)
 
 def bpm(audio, sr):
     bpm = feature.tempo(y=audio, sr=sr)[0]
@@ -82,24 +77,6 @@ def mfcc(audio, sr):
     v = np.var(y, axis=1)
     return m, v
 
-#* CREATE CV (COEFFICIENT OF VARIATION) COLUMNS HEADER FOR EACH FEATURE
-# def create_data_table_header():
-#     header = ['singer','filename','sample','bpm','stft_cv','cqt_cv','cens_cv','contrast_cv','centroid_cv','bandwidth_cv','melspectrogram_cv','rms_cv']
-#     for i in range(1, n_mfcc+1):
-#         header = np.append(header, ['mfcc%s_cv'%i])
-#     return header
-
-#* CREATE CV (COEFFICIENT OF VARIATION) COLUMNS FOR EACH FEATURE
-# def create_instance(singer, num_audio, sample, audio, sr):
-#     filename = "%s/audio-%s.wav"%(singer, num_audio)
-#     instance = np.array([singer,filename,sample,bpm(audio,sr),stft(audio,sr),cqt(audio,sr),
-#                          cens(audio,sr),contrast(audio,sr),centroid(audio,sr),
-#                          bandwidth(audio,sr),melspectrogram(audio,sr),rms(audio)])
-#     cv = mfcc(audio,sr)
-#     for i in range(0, n_mfcc):
-#         instance = np.append(instance, [cv[i]])
-#     return instance
-
 #* CREATE MEAN AND VAR COLUMNS HEADER FOR EACH FEATURE
 def create_data_table_header():
     header = ['singer','filename','sample','bpm','stft_mean','stft_var','cqt_mean','cqt_var','cens_mean','cens_var','contrast_mean','contrast_var','centroid_mean','centroid_var','bandwidth_mean','bandwidth_var','melspectrogram_mean','melspectrogram_var','rms_mean','rms_var']
@@ -118,12 +95,22 @@ def create_instance(singer, num_audio, sample, audio, sr):
         instance = np.append(instance, [m[i], v[i]])
     return instance
 
+#* CREATE MEAN AND VAR COLUMNS FOR EACH FEATURE
+def get_audio_features(audio, sr):
+    features = np.array([bpm(audio,sr),*stft(audio,sr),*cqt(audio,sr),
+                         *cens(audio,sr),*contrast(audio,sr),*centroid(audio,sr),
+                         *bandwidth(audio,sr),*melspectrogram(audio,sr),*rms(audio)])
+    m, v = mfcc(audio,sr)
+    for i in range(0, n_mfcc):
+        features = np.append(features, [m[i], v[i]])
+    return features
+
 def run_features_script():
     print("\n*** START ***")
     # Record the start time
     start_time = time.time()
     header = create_data_table_header()
-    csvfile, writer = create_data_table_csv("dataset_complete_2.csv")
+    csvfile, writer = create_csv_file("dataset_complete_2.csv")
     writer.writerow(header)          
     for singer in singers:
         singer_dir = "./audios/%s"%singer
@@ -159,4 +146,4 @@ def run_features_script():
     print("*** END ***\n")
             
 #* Run script
-run_features_script()
+#run_features_script()

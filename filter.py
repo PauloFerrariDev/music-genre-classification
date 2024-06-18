@@ -3,12 +3,11 @@ from scipy.signal import butter, lfilter, freqz, spectrogram
 import matplotlib.pyplot as plt
 import librosa
 import sounddevice as sd
-# import scipy.io.wavfile as wav
 
 two_pi = 2*np.pi
 order = 8 # max order for bandpass Butterworth filter without error
 Wn = np.array([100, 320])*two_pi # cutoff frequencies [rad/s]
-audio_path_test = './audios/cassia-eller/audio-0.wav'
+# audio_path_test = './audios/cassia-eller/audio-0.wav'
 
 def audio_data(audio_path: str):
     audio , sr = librosa.load(audio_path) # sr = sampling rate [sample/s]
@@ -41,10 +40,7 @@ def add_uniform_noise(audio_data, noise_level=0.05, t=[]):
                          A higher value means more noise. Default is 0.05.
     output_path (str): Path to save the output noisy audio file. Default is 'noisy_audio.wav'.
     """
-    
-    # Read the audio file
-    # sample_rate, audio_data = wav.read(audio_path)
-    
+       
     # Ensure the audio data is in float format
     audio_data = audio_data.astype(np.float32)
     
@@ -72,9 +68,6 @@ def add_uniform_noise(audio_data, noise_level=0.05, t=[]):
     noisy_audio = noisy_audio.astype(audio_data.dtype)
     return noisy_audio
 
-# Example usage
-# add_uniform_noise('input_audio.wav', noise_level=0.05)
-
 def add_normal_noise(audio_data, noise_level=0.05, t=[]):
     """
     Adds Normal noise to an audio file.
@@ -85,10 +78,7 @@ def add_normal_noise(audio_data, noise_level=0.05, t=[]):
                          A higher value means more noise. Default is 0.05.
     output_path (str): Path to save the output noisy audio file. Default is 'noisy_audio.wav'.
     """
-    
-    # Read the audio file
-    # sample_rate, audio_data = wav.read(audio_path)
-    
+          
     # Ensure the audio data is in float format
     audio_data = audio_data.astype(np.float32)
     
@@ -115,14 +105,6 @@ def add_normal_noise(audio_data, noise_level=0.05, t=[]):
     # Convert back to original data type
     noisy_audio = noisy_audio.astype(audio_data.dtype)
     return noisy_audio
-
-# Example usage
-# add_normal_noise('input_audio.wav', noise_level=0.05)
-
-# def audio_reverse(audio):
-#     return audio[::-1]
-# def audio_inverse(audio):
-#     return audio*(-1)
 
 def plot_filtered_audio(audio, filtered_audio, sr, b, a, t, filter_type):
     #* Plot the frequency response.
@@ -164,9 +146,21 @@ def plot_filtered_audio(audio, filtered_audio, sr, b, a, t, filter_type):
     plt.subplots_adjust(hspace=0.6)
     plt.show()
 
-def play_audio(audio, sr):
+def record_audio(duration=30, sample_rate=22050):
+    print("Start Recording")
+    audio = sd.rec(int(duration * sample_rate), samplerate=sample_rate, channels=1, dtype='float32')
+    sd.wait()
+    print("Finished Recording")
+    return audio, sample_rate
+
+def play_audio(audio, sr, duration=30):
+    if (len(audio) < sr*duration):
+        print("Play Audio: Error")
+        return
+    print("Start Playing")
     sd.play(audio, sr)
     sd.wait()
+    print("Finished Playing")
 
 #* Main function
 def run_filter_script():
