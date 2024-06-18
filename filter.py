@@ -7,7 +7,6 @@ import sounddevice as sd
 two_pi = 2*np.pi
 order = 8 # max order for bandpass Butterworth filter without error
 Wn = np.array([100, 320])*two_pi # cutoff frequencies [rad/s]
-# audio_path_test = './audios/cassia-eller/audio-0.wav'
 
 def audio_data(audio_path: str):
     audio , sr = librosa.load(audio_path) # sr = sampling rate [sample/s]
@@ -165,7 +164,7 @@ def play_audio(audio, sr, duration=30):
 #* Main function
 def run_filter_script():
     print("\n*** START ***")
-    #* Get audio data
+    audio_path_test = './audios/cassia-eller/audio-0.wav'
     audio, sr, t = audio_data(audio_path_test)
     audio_uniform = add_uniform_noise(audio, noise_level=0.15, t=t)
     audio_normal = add_normal_noise(audio, noise_level=0.15, t=t)
