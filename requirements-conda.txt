@@ -4,3 +4,4 @@ python-sounddevice
 scipy
 librosa
 pandas
+scikit-learn
