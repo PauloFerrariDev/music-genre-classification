@@ -11,8 +11,9 @@ SINGER_MODEL = joblib.load('singer_identifier_svm_linear_model.pkl')
 
 def identify_singer(audio, sr):    
     audio_bpf, *_ = filter.bandpass_filter(audio, sr)
+    filter.play_audio(audio_bpf, sr)
     audio_features = features.get_audio_features(audio_bpf, sr)
-    audio_features = audio_features.reshape(1, -1)        
+    audio_features = audio_features.reshape(1, -1)   
     singer_predicted = SINGER_MODEL.predict(audio_features)
     print("Identified singer:", singer_predicted)
 
