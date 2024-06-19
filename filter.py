@@ -152,7 +152,7 @@ def record_audio(duration=30, sample_rate=22050):
     print("Finished Recording")
     return audio, sample_rate
 
-def play_audio(audio, sr, duration=30):
+def play_audio(audio, sr, duration=0):
     if (len(audio) < sr*duration):
         print("Play Audio: Error")
         return
