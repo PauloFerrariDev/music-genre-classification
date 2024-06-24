@@ -14,6 +14,11 @@ def audio_data(audio_path: str):
     t = np.linspace(0, duration, num=audio.size) # samples
     return audio, sr, t
 
+def audio_normalized(audio):
+    max = np.max(np.absolute(audio))
+    audio_n = audio / max
+    return audio_n
+
 def lowpass_filter(audio, sr):    
     b, a = butter(N=order, Wn=Wn[0], btype='lowpass', analog=False, output='ba', fs=sr)
     y = lfilter(b, a, audio)
@@ -164,16 +169,19 @@ def play_audio(audio, sr, duration=0):
 #* Main function
 def run_filter_script():
     print("\n*** START ***")
-    audio_path_test = './audios/cassia-eller/audio-0.wav'
+    audio_path_test = './audios/rita-lee/audio-10.wav'
     audio, sr, t = audio_data(audio_path_test)
-    audio_uniform = add_uniform_noise(audio, noise_level=0.15, t=t)
-    audio_normal = add_normal_noise(audio, noise_level=0.15, t=t)
-    plt.subplot(3,1,1)
+    # audio_uniform = add_uniform_noise(audio, noise_level=0.15, t=t)
+    # audio_normal = add_normal_noise(audio, noise_level=0.15, t=t)
+    audio_bpf, *_ = bandpass_filter(audio, sr)
+    print('Audio:', audio)
+    print('Audio BDF:', audio_bpf)
+    print('Audio length:', len(audio))
+    print('Audio sample rate:', sr)
+    plt.subplot(2,1,1)
     plt.plot(t,audio)
-    plt.subplot(3,1,2)
-    plt.plot(t,audio_uniform)
-    plt.subplot(3,1,3)
-    plt.plot(t,audio_normal)
+    plt.subplot(2,1,2)
+    plt.plot(t,audio_bpf)
     plt.show()
     #* Filter the audio
     # audio_lp, blp, alp = lowpass_filter(audio, sr)
@@ -185,8 +193,8 @@ def run_filter_script():
     # plot_filtered_audio(audio, audio_hp, sr, bhp, ahp, t, "Highpass")
     #* Play audio and audio filtered
     # play_audio(audio=audio, sr=sr)
-    play_audio(audio=audio_uniform, sr=sr)
-    play_audio(audio=audio_normal, sr=sr)
+    # play_audio(audio=audio_uniform, sr=sr)
+    # play_audio(audio=audio_normal, sr=sr)
     # play_audio(audio=audio_bp, sr=sr)
     # play_audio(audio=audio_hp, sr=sr)
     print("*** END ***\n")
