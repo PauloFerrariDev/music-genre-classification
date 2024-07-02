@@ -1,12 +1,12 @@
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
-from sklearn.neural_network import MLPClassifier
+# from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import classification_report, f1_score, accuracy_score, precision_score, recall_score
 import joblib
 
 # Carregar o dataset
-dataframe = pd.read_csv('dataset_complete_bandpass_only.csv')
+dataframe = pd.read_csv('dataset_complete_with_recordings.csv')
 
 y = dataframe.iloc[:, 1].to_numpy()   # target (coluna 'singer')
 X = dataframe.iloc[:, 3:].to_numpy()  # features
@@ -15,7 +15,7 @@ X = dataframe.iloc[:, 3:].to_numpy()  # features
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
 # Treinar o modelo SVM com kernel RBF e C=1
-svm_model = SVC(kernel='linear', degree=3, C=3, gamma='scale')  # Modificado para kernel 'rbf' e C=1
+svm_model = SVC(kernel='linear', degree=1, C=1, gamma='scale')  # Modificado para kernel 'rbf' e C=1
 svm_model.fit(X_train, y_train)
 # nn_model = MLPClassifier(hidden_layer_sizes=[100,300,100], activation='relu', solver='adam', shuffle=True, max_iter=1000)
 # nn_model.fit(X_train, y_train)
@@ -39,7 +39,7 @@ print("Accuracy-Score:", accuracy_score(y_true=y_test, y_pred=y_pred_svm))
 # print("Accuracy-Score:", accuracy_score(y_true=y_test, y_pred=y_pred_nn))
 
 # Salva o modelo treinado para uso futuro
-# joblib.dump(svm_model, 'singer_identifier_svm_linear_model.pkl')
+joblib.dump(svm_model, 'svm_model.pkl')
 
 # Para carregar o modelo e fazer novas previsões
 # svm_model = joblib.load('singer_identifier_svm_linear_model.pkl')

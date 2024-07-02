@@ -1,8 +1,7 @@
+librosa
+scikit-learn
+scipy
+pandas
 numpy
 matplotlib
-python-sounddevice
-scipy
-librosa
-pandas
-scikit-learn
-keyboard
+tensorflow-cpu

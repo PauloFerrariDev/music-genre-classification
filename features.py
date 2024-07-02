@@ -110,27 +110,27 @@ def run_features_script():
     # Record the start time
     start_time = time.time()
     header = create_data_table_header()
-    csvfile, writer = create_csv_file("dataset_complete_2.csv")
+    csvfile, writer = create_csv_file("dataset_audios_gravados.csv")
     writer.writerow(header)          
     for singer in singers:
-        singer_dir = "./audios/%s"%singer
+        singer_dir = f"./audios_gravados/{singer}"
         for num in range(0, playlist_size):
-            audio_path = "%s/audio-%s.wav"%(singer_dir, num)
+            audio_path = f"{singer_dir}/audio-{num}.wav"
             print(audio_path)
             audio, sr, _ = filter.audio_data(audio_path)
-            audio_lpf, *_ = filter.lowpass_filter(audio, sr)
             audio_bpf, *_ = filter.bandpass_filter(audio, sr)
-            audio_hpf, *_ = filter.highpass_filter(audio, sr)
-            audio_uniform_noise = filter.add_uniform_noise(audio, noise_level=0.09)
-            audio_normal_noise = filter.add_normal_noise(audio, noise_level=0.09)
+            # audio_lpf, *_ = filter.lowpass_filter(audio, sr)
+            # audio_hpf, *_ = filter.highpass_filter(audio, sr)
+            audio_uniform_noise = filter.add_uniform_noise(audio, noise_level=0.11)
+            audio_normal_noise = filter.add_normal_noise(audio, noise_level=0.11)
             uniform_noise_bpf, *_ = filter.bandpass_filter(audio_uniform_noise, sr)
             normal_noise_bpf, *_ = filter.bandpass_filter(audio_normal_noise, sr)
             instances = [create_instance(singer, num, 'original', audio, sr),
-                        create_instance(singer, num, 'lowpass', audio_lpf, sr),
                         create_instance(singer, num, 'bandpass', audio_bpf, sr),
-                        create_instance(singer, num, 'highpass', audio_hpf, sr),
-                        create_instance(singer, num, 'uniform_noise', audio_uniform_noise, sr),
-                        create_instance(singer, num, 'normal_noise', audio_normal_noise, sr),
+                        # create_instance(singer, num, 'lowpass', audio_lpf, sr),
+                        # create_instance(singer, num, 'highpass', audio_hpf, sr),
+                        # create_instance(singer, num, 'uniform_noise', audio_uniform_noise, sr),
+                        # create_instance(singer, num, 'normal_noise', audio_normal_noise, sr),
                         create_instance(singer, num, 'uniform_noise_bandpass', uniform_noise_bpf, sr),
                         create_instance(singer, num, 'normal_noise_bandpass', normal_noise_bpf, sr),
                         ]
@@ -146,4 +146,4 @@ def run_features_script():
     print("*** END ***\n")
             
 #* Run script
-#run_features_script()
+# run_features_script()
